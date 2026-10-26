@@ -300,7 +300,12 @@ git commit -m "feat: initial Dance Loop"
 ### 关联远端并推送
 
 ```bash
+# HTTPS（需要 Personal Access Token）
 git remote add origin https://github.com/<你的用户名>/dance-loop.git
+
+# 或 SSH（推荐，避免 token 权限问题）
+# git remote add origin git@github.com:<你的用户名>/dance-loop.git
+
 git push -u origin main
 ```
 
@@ -313,6 +318,13 @@ gh repo create dance-loop --public --source=. --remote=origin --push
 推送完成后，按上面的 [GitHub Pages](#github-pages-自动部署) 开启自动部署，就能得到手机可安装的 HTTPS 地址。
 
 > 如果 HTTPS 推送时提示需要密码，GitHub 现在要求使用 **Personal Access Token**（或在 GitHub Desktop 里登录），不能直接用账号密码。
+>
+> **如果遇到 `without workflow scope` 报错**（提交里包含 `.github/workflows/deploy.yml` 时很常见）：
+> 给 Personal Access Token 补上 `workflow` 权限，或直接改用 SSH：
+> ```bash
+> git remote set-url origin git@github.com:<你的用户名>/dance-loop.git
+> git push -u origin main
+> ```
 
 ### 使用 GitHub Desktop（可选，更简单）
 
