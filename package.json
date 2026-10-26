@@ -1,0 +1,33 @@
+{
+  "name": "dance-loop",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Dance Loop · 本地舞蹈视频循环练习工具",
+  "scripts": {
+    "dev": "vite --host",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host",
+    "serve": "vite preview --host"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "vite": "^8.3.5",
+    "vite-plugin-pwa": "^2.0.0"
+  },
+  "license": "MIT",
+  "keywords": [
+    "dance",
+    "street-dance",
+    "dance-practice",
+    "video-loop",
+    "ab-loop",
+    "pwa",
+    "vite",
+    "typescript"
+  ],
+  "engines": {
+    "node": ">=20.19"
+  }
+}

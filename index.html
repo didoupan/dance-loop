@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no"
+    />
+    <meta name="theme-color" content="#08090b" />
+    <meta name="description" content="Dance Loop · 本地舞蹈视频 A-B 循环、变速、逐帧、局部放大练习工具" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Dance Loop" />
+    <link rel="icon" type="image/svg+xml" href="./icon.svg" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+    <title>Dance Loop · 扒舞练习器</title>
+  </head>
+  <body>
+    <!-- 图标库 -->
+    <svg class="svg-sprite" aria-hidden="true">
+      <symbol id="i-play" viewBox="0 0 24 24">
+        <path d="M8 5.14v13.72a1 1 0 0 0 1.53.85l10.97-6.86a1 1 0 0 0 0-1.7L9.53 4.29A1 1 0 0 0 8 5.14Z" fill="currentColor" />
+      </symbol>
+      <symbol id="i-pause" viewBox="0 0 24 24">
+        <rect x="6.5" y="5" width="4" height="14" rx="1.4" fill="currentColor" />
+        <rect x="13.5" y="5" width="4" height="14" rx="1.4" fill="currentColor" />
+      </symbol>
+      <symbol id="i-frame-back" viewBox="0 0 24 24">
+        <path d="M6 5v14M18.5 6.2 9.5 12l9 5.8V6.2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+      </symbol>
+      <symbol id="i-frame-fwd" viewBox="0 0 24 24">
+        <path d="M18 5v14M5.5 6.2l9 5.8-9 5.8V6.2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+      </symbol>
+      <symbol id="i-loop" viewBox="0 0 24 24">
+        <path d="M17.5 7H7.2a4.2 4.2 0 0 0 0 8.4h9.6a4.2 4.2 0 0 0 0-8.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        <path d="m15.4 4.6 2.4 2.4-2.4 2.4M8.6 19.4 6.2 17l2.4-2.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+      </symbol>
+      <symbol id="i-mirror" viewBox="0 0 24 24">
+        <path d="M12 3v18" fill="none" stroke="currentColor" stroke-width="1.4" stroke-dasharray="2.2 2.6" stroke-linecap="round" />
+        <path d="M9 6.5 4 12l5 5.5V6.5ZM15 6.5l5 5.5-5 5.5V6.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+      </symbol>
+      <symbol id="i-crop" viewBox="0 0 24 24">
+        <path d="M4 9V5.8C4 4.8 4.8 4 5.8 4H9M15 4h3.2c1 0 1.8.8 1.8 1.8V9M20 15v3.2c0 1-.8 1.8-1.8 1.8H15M9 20H5.8c-1 0-1.8-.8-1.8-1.8V15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        <path d="M9.5 9.5h5v5h-5z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-dasharray="2 2" />
+      </symbol>
+      <symbol id="i-expand" viewBox="0 0 24 24">
+        <path d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+      </symbol>
+      <symbol id="i-collapse" viewBox="0 0 24 24">
+        <path d="M4 9h5V4M20 9h-5V4M4 15h5v5M20 15h-5v5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+      </symbol>
+      <symbol id="i-volume" viewBox="0 0 24 24">
+        <path d="M4 9.5v5h3.2L12 18.5v-13L7.2 9.5H4Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+        <path d="M15.5 9a4 4 0 0 1 0 6M18.2 6.6a7.5 7.5 0 0 1 0 10.8" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+      </symbol>
+      <symbol id="i-mute" viewBox="0 0 24 24">
+        <path d="M4 9.5v5h3.2L12 18.5v-13L7.2 9.5H4Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+        <path d="m15.5 9 5 6M20.5 9l-5 6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+      </symbol>
+      <symbol id="i-help" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.7" />
+        <path d="M9.6 9.3a2.5 2.5 0 1 1 3.7 2.2c-.9.5-1.3 1-1.3 2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+        <circle cx="12" cy="16.9" r="1" fill="currentColor" />
+      </symbol>
+      <symbol id="i-close" viewBox="0 0 24 24">
+        <path d="m6.5 6.5 11 11M17.5 6.5l-11 11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+      </symbol>
+      <symbol id="i-folder" viewBox="0 0 24 24">
+        <path d="M3.5 7.5A1.5 1.5 0 0 1 5 6h4l1.7 2H19a1.5 1.5 0 0 1 1.5 1.5v8A1.5 1.5 0 0 1 19 19H5a1.5 1.5 0 0 1-1.5-1.5v-10Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+      </symbol>
+      <symbol id="i-reset" viewBox="0 0 24 24">
+        <path d="M5 8.5A7.5 7.5 0 1 1 4.8 13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        <path d="M5 4.5v4.3h4.3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+      </symbol>
+      <symbol id="i-video" viewBox="0 0 24 24">
+        <rect x="3" y="5" width="13" height="14" rx="2.4" fill="none" stroke="currentColor" stroke-width="1.7" />
+        <path d="m16 10 4.2-2.4c.5-.3 1.1.1 1.1.7v7.4c0 .6-.6 1-1.1.7L16 14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+      </symbol>
+      <symbol id="i-chevron-down" viewBox="0 0 24 24">
+        <path d="m6.5 9.5 5.5 5.5 5.5-5.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+      </symbol>
+      <symbol id="i-download" viewBox="0 0 24 24">
+        <path d="M12 4v11m0 0 4.2-4.2M12 15l-4.2-4.2M5 19.5h14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+      </symbol>
+    </svg>
+
+    <div class="app">
+      <header class="topbar">
+        <div class="brand" aria-label="Dance Loop">
+          <span class="brand-mark">
+            <svg viewBox="0 0 32 32" aria-hidden="true">
+              <path d="M11 8.5v15l12-7.5-12-7.5Z" fill="currentColor" />
+              <path d="M23 8.5v15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" opacity=".35" />
+            </svg>
+          </span>
+          <span class="brand-text">DANCE<span>LOOP</span></span>
+        </div>
+
+        <div class="file-bar" id="file-bar">
+          <span class="file-dot" id="file-dot"></span>
+          <span class="file-name" id="file-name">未加载视频</span>
+          <span class="file-meta" id="file-meta"></span>
+        </div>
+
+        <div class="top-actions">
+          <button class="btn btn-ghost help-btn" id="btn-help" title="快捷键 (?)">
+            <svg class="icon" aria-hidden="true"><use href="#i-help" /></svg>
+            <span>快捷键</span>
+          </button>
+          <button class="btn btn-primary" id="btn-open">
+            <svg class="icon" aria-hidden="true"><use href="#i-folder" /></svg>
+            <span>打开视频</span>
+          </button>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <section class="stage-wrap">
+          <div class="stage" id="stage">
+            <div class="viewport" id="viewport">
+              <video id="video" playsinline preload="auto" disablepictureinpicture></video>
+            </div>
+
+            <div class="empty" id="empty">
+              <div class="empty-inner">
+                <div class="empty-icon">
+                  <svg viewBox="0 0 48 48" aria-hidden="true">
+                    <rect x="7" y="11" width="26" height="26" rx="5" fill="none" stroke="currentColor" stroke-width="2.4" />
+                    <path d="m33 20 6.5-3.6c.8-.4 1.5.2 1.5 1v13c0 .8-.7 1.4-1.5 1L33 28" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" />
+                    <path d="M17 18.5v11l9-5.5-9-5.5Z" fill="currentColor" />
+                  </svg>
+                </div>
+                <h1>把舞蹈视频拖进来</h1>
+                <p>MP4 / MOV / WebM · 本地播放，不上传</p>
+                <button class="btn btn-primary btn-lg" id="btn-open-empty">
+                  <svg class="icon" aria-hidden="true"><use href="#i-folder" /></svg>
+                  选择视频
+                </button>
+                <div class="feature-row" aria-hidden="true">
+                  <span>A-B 循环</span>
+                  <span>0.3–1× 变速</span>
+                  <span>局部放大</span>
+                  <span>镜像画面</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="stage-hud" id="stage-hud" hidden>
+              <div class="hud-left">
+                <span class="hud-pill" id="loop-count" hidden>
+                  <span class="hud-dot"></span>循环 <b id="loop-count-num">0</b>
+                </span>
+                <button class="hud-btn hud-speed" id="btn-speed-hud" title="当前速度 · 点击调整">
+                  1.00×
+                </button>
+              </div>
+              <div class="hud-right">
+                <button class="hud-btn hud-icon hud-mute" id="btn-mute-hud" title="静音 (M)" aria-label="静音" data-needs-video>
+                  <svg class="icon" aria-hidden="true"><use href="#i-volume" /></svg>
+                </button>
+                <button class="hud-btn" id="btn-zoom-hud" hidden>
+                  <span id="zoom-hud-value">1.0×</span>
+                  <span class="hud-reset">复位</span>
+                </button>
+                <button class="hud-btn hud-icon" id="btn-fullscreen-stage" data-fullscreen title="全屏 (F)" aria-label="全屏">
+                  <svg class="icon" aria-hidden="true"><use href="#i-expand" /></svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="capture-layer" id="capture" hidden>
+              <div class="capture-rect" id="capture-rect"></div>
+              <div class="capture-hint">
+                拖动框选要放大的区域 <kbd>Esc</kbd> 取消
+              </div>
+            </div>
+
+            <div class="stage-loading" id="stage-loading" hidden>
+              <span class="spinner"></span>
+              <span>正在读取视频…</span>
+            </div>
+
+            <div class="drop-overlay" id="drop-overlay" hidden>
+              <div class="drop-card">
+                <svg class="icon" aria-hidden="true"><use href="#i-download" /></svg>
+                <span>松开以打开视频</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-wrap">
+            <div class="timeline" id="timeline" tabindex="0" role="slider" aria-label="视频时间轴" aria-valuemin="0" aria-valuemax="0" aria-valuenow="0">
+              <div class="tl-thumbs" id="tl-thumbs">
+                <div class="tl-thumbs-skeleton"></div>
+              </div>
+              <div class="tl-shade tl-shade-left" id="tl-shade-left"></div>
+              <div class="tl-shade tl-shade-right" id="tl-shade-right"></div>
+              <div class="tl-loop" id="tl-loop"></div>
+              <div class="tl-playhead" id="tl-playhead"><span class="tl-playhead-cap"></span></div>
+              <div class="tl-handle tl-handle-a" id="tl-handle-a" data-handle="a">
+                <span>A</span>
+              </div>
+              <div class="tl-handle tl-handle-b" id="tl-handle-b" data-handle="b">
+                <span>B</span>
+              </div>
+              <div class="tl-tip" id="tl-tip"></div>
+            </div>
+            <div class="tl-scale">
+              <span>0:00</span>
+              <span id="tl-duration">0:00</span>
+            </div>
+          </div>
+
+          <div class="transport">
+            <div class="transport-main">
+              <button class="icon-btn" id="btn-step-back" title="上一帧 (←)" aria-label="上一帧" data-needs-video>
+                <svg class="icon" aria-hidden="true"><use href="#i-frame-back" /></svg>
+              </button>
+              <button class="play-btn" id="btn-play" title="播放 / 暂停 (空格)" aria-label="播放" data-needs-video>
+                <svg class="icon" aria-hidden="true"><use href="#i-play" /></svg>
+              </button>
+              <button class="icon-btn" id="btn-step-fwd" title="下一帧 (→)" aria-label="下一帧" data-needs-video>
+                <svg class="icon" aria-hidden="true"><use href="#i-frame-fwd" /></svg>
+              </button>
+            </div>
+
+            <div class="transport-time">
+              <span class="tc-current" id="tc-current">0:00.000</span>
+              <span class="tc-divider">/</span>
+              <span class="tc-duration" id="tc-duration">0:00.000</span>
+              <span class="tc-loop" id="transport-loop" hidden>循环 ×0</span>
+            </div>
+
+            <div class="transport-tools">
+              <button class="tool-btn is-active" id="btn-loop" title="A-B 循环 (L)" data-needs-video>
+                <svg class="icon" aria-hidden="true"><use href="#i-loop" /></svg>
+                <span>循环</span>
+              </button>
+              <button class="tool-btn" id="btn-mirror" title="镜像画面 (V)" data-needs-video>
+                <svg class="icon" aria-hidden="true"><use href="#i-mirror" /></svg>
+                <span>镜像</span>
+              </button>
+              <button class="tool-btn" id="btn-region" title="框选放大 (Z)" data-needs-video>
+                <svg class="icon" aria-hidden="true"><use href="#i-crop" /></svg>
+                <span>放大</span>
+              </button>
+              <button class="icon-btn tool-icon" id="btn-mute" title="静音 (M)" aria-label="静音" data-needs-video>
+                <svg class="icon" aria-hidden="true"><use href="#i-volume" /></svg>
+              </button>
+              <button class="icon-btn tool-icon" id="btn-fullscreen" data-fullscreen title="全屏 (F)" aria-label="全屏" data-needs-video>
+                <svg class="icon" aria-hidden="true"><use href="#i-expand" /></svg>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <aside class="panel" id="panel">
+          <div class="panel-tabs" role="tablist" aria-label="控制面板">
+            <button class="panel-tab" data-tab="speed" role="tab" aria-selected="false">速度</button>
+            <button class="panel-tab is-active" data-tab="loop" role="tab" aria-selected="true">循环</button>
+            <button class="panel-tab" data-tab="view" role="tab" aria-selected="false">画面</button>
+          </div>
+
+          <!-- 速度 -->
+          <section class="panel-section" data-panel="speed">
+            <div class="section-head">
+              <div>
+                <span class="eyebrow">SPEED</span>
+                <h2>播放速度</h2>
+              </div>
+              <div class="speed-readout"><span id="speed-readout">1.00</span><em>×</em></div>
+            </div>
+
+            <div class="speed-presets" id="speed-presets">
+              <button class="chip" data-speed="0.3" data-needs-video>0.3×</button>
+              <button class="chip" data-speed="0.5" data-needs-video>0.5×</button>
+              <button class="chip" data-speed="0.75" data-needs-video>0.75×</button>
+              <button class="chip is-active" data-speed="1" data-needs-video>1×</button>
+            </div>
+
+            <div class="slider-block">
+              <input type="range" id="speed-range" min="0.1" max="2" step="0.01" value="1" aria-label="播放速度" data-needs-video />
+              <div class="slider-legend"><span>0.1×</span><span>2.0×</span></div>
+            </div>
+
+            <div class="custom-speed">
+              <label for="speed-input">自定义速度</label>
+              <div class="stepper">
+                <button id="speed-dec" aria-label="减速" data-needs-video>−</button>
+                <input id="speed-input" type="number" inputmode="decimal" min="0.1" max="2" step="0.01" value="1" data-needs-video />
+                <span class="stepper-unit">×</span>
+                <button id="speed-inc" aria-label="加速" data-needs-video>+</button>
+              </div>
+            </div>
+
+            <div class="row-between">
+              <span class="hint">慢放时保持音调不变</span>
+              <label class="switch">
+                <input id="pitch-toggle" type="checkbox" checked data-needs-video aria-label="保持音调" />
+                <span class="switch-track"></span>
+              </label>
+            </div>
+          </section>
+
+          <!-- 循环 -->
+          <section class="panel-section is-active" data-panel="loop">
+            <div class="section-head">
+              <div>
+                <span class="eyebrow">LOOP</span>
+                <h2>片段循环</h2>
+              </div>
+              <label class="switch">
+                <input id="loop-enabled" type="checkbox" checked data-needs-video aria-label="A-B 循环" />
+                <span class="switch-track"></span>
+              </label>
+            </div>
+
+            <div class="ab-grid">
+              <div class="ab-card is-a">
+                <div class="ab-head"><span class="ab-badge">A</span><span>起点</span></div>
+                <div class="ab-time" id="a-time">0:00.000</div>
+                <div class="ab-actions">
+                  <button class="mini mini-accent" id="set-a" data-needs-video>设为当前</button>
+                  <div class="nudge">
+                    <button id="a-nudge-back" aria-label="A 点前移一帧" data-needs-video>−</button>
+                    <button id="a-nudge-fwd" aria-label="A 点后移一帧" data-needs-video>+</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="ab-card is-b">
+                <div class="ab-head"><span class="ab-badge">B</span><span>终点</span></div>
+                <div class="ab-time" id="b-time">0:00.000</div>
+                <div class="ab-actions">
+                  <button class="mini mini-accent-b" id="set-b" data-needs-video>设为当前</button>
+                  <div class="nudge">
+                    <button id="b-nudge-back" aria-label="B 点前移一帧" data-needs-video>−</button>
+                    <button id="b-nudge-fwd" aria-label="B 点后移一帧" data-needs-video>+</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="loop-summary">
+              <span class="loop-length" id="loop-length">片段 0.00 秒</span>
+              <div class="loop-summary-actions">
+                <button class="mini" id="loop-goto-a" data-needs-video>回到 A</button>
+                <button class="mini" id="loop-full" data-needs-video>取整段</button>
+              </div>
+            </div>
+
+            <p class="hint">在时间轴上拖动 A / B 手柄，也能精确调整循环点。</p>
+          </section>
+
+          <!-- 画面 -->
+          <section class="panel-section" data-panel="view">
+            <div class="section-head">
+              <div>
+                <span class="eyebrow">VIEW</span>
+                <h2>画面与放大</h2>
+              </div>
+              <div class="zoom-readout" id="zoom-readout">1.00×</div>
+            </div>
+
+            <div class="view-actions">
+              <button class="btn btn-soft" id="btn-region-2" data-needs-video>
+                <svg class="icon" aria-hidden="true"><use href="#i-crop" /></svg>
+                框选放大
+              </button>
+              <button class="btn btn-ghost" id="btn-zoom-reset" data-needs-video>
+                <svg class="icon" aria-hidden="true"><use href="#i-reset" /></svg>
+                复位
+              </button>
+            </div>
+
+            <div class="field-label">显示大小</div>
+            <div class="segmented" id="size-modes" role="group" aria-label="显示大小">
+              <button class="is-active" data-mode="fit" data-needs-video>适应</button>
+              <button data-mode="fill" data-needs-video>铺满</button>
+              <button data-mode="custom" data-needs-video>自定义</button>
+            </div>
+
+            <div class="slider-block size-block">
+              <div class="slider-head"><span>画面比例</span><span id="size-value">100%</span></div>
+              <input type="range" id="size-range" min="25" max="150" step="1" value="100" aria-label="画面大小" data-needs-video />
+            </div>
+
+            <div class="slider-block">
+              <div class="slider-head"><span>缩放</span><span id="zoom-value">1.00×</span></div>
+              <input type="range" id="zoom-range" min="1" max="8" step="0.01" value="1" aria-label="缩放" data-needs-video />
+            </div>
+
+            <div class="row-between view-footer">
+              <label class="switch">
+                <input id="mirror-toggle" type="checkbox" data-needs-video />
+                <span class="switch-track"></span>
+                <span>镜像画面</span>
+              </label>
+              <button class="btn btn-ghost btn-sm" id="btn-fullscreen-2" data-fullscreen data-needs-video>
+                <svg class="icon" aria-hidden="true"><use href="#i-expand" /></svg>
+                全屏
+              </button>
+            </div>
+
+            <p class="hint">双指捏合 / 滚轮缩放，拖动平移。框选后自动放大到选中区域。</p>
+          </section>
+
+          <div class="panel-foot">
+            <button class="panel-help-link" id="btn-help-2">
+              <span>快捷键</span>
+              <kbd>?</kbd>
+            </button>
+            <div class="panel-mark" aria-hidden="true">KEEP<br /><span>LOOPING</span></div>
+            <div class="panel-privacy"><span class="privacy-dot"></span>本地播放 · 不上传</div>
+          </div>
+        </aside>
+      </main>
+    </div>
+
+    <input type="file" id="file-input" accept="video/mp4,video/quicktime,video/webm,video/x-m4v,video/*" hidden />
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <dialog class="sheet" id="help-dialog">
+      <div class="sheet-head">
+        <div>
+          <span class="eyebrow">KEYBOARD</span>
+          <h2>快捷键</h2>
+        </div>
+        <button class="icon-btn" id="help-close" aria-label="关闭">
+          <svg class="icon" aria-hidden="true"><use href="#i-close" /></svg>
+        </button>
+      </div>
+      <div class="shortcut-grid">
+        <div><kbd>空格</kbd><span>播放 / 暂停</span></div>
+        <div><kbd>←</kbd><span>上一帧</span></div>
+        <div><kbd>→</kbd><span>下一帧</span></div>
+        <div><kbd>Shift</kbd> + <kbd>← / →</kbd><span>前后 1 秒</span></div>
+        <div><kbd>A</kbd><span>把当前时间设为 A 点</span></div>
+        <div><kbd>B</kbd><span>把当前时间设为 B 点</span></div>
+        <div><kbd>L</kbd><span>开启 / 关闭循环</span></div>
+        <div><kbd>Z</kbd><span>框选局部放大</span></div>
+        <div><kbd>V</kbd><span>镜像画面</span></div>
+        <div><kbd>M</kbd><span>静音</span></div>
+        <div><kbd>F</kbd><span>全屏</span></div>
+        <div><kbd>0</kbd><span>复位缩放</span></div>
+        <div><kbd>1</kbd>–<kbd>4</kbd><span>0.3 / 0.5 / 0.75 / 1×</span></div>
+        <div><kbd>[</kbd> / <kbd>]</kbd><span>速度 − / + 0.05×</span></div>
+      </div>
+      <p class="hint">在输入框中输入时，快捷键不会生效。手机端可直接使用界面按钮和手势。</p>
+    </dialog>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
